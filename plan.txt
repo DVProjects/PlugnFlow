@@ -1,0 +1,26 @@
+// This is a file to plan on how to divide the OS in steps
+
+multiboot -> sysinit	// For practical tests we will use GRUB
+
+sysinit:	<- Working on
+	ebx -> multiboot info structure	// Store the data give by mutliboot
+	init video // We init the display as soon as possible for debugging
+	store mmap info
+	store drives info 
+
+	kernel_init	// Lower kernel 
+	kernel		// Higher kernel 
+	
+kernel_init:
+	GDT_init
+	ISR_init
+	IRQ_init
+	IDT_init
+	PIC_init
+
+kernel:
+	MMU_init
+	.
+	.		// Other system stuff
+	.
+	shell
