@@ -1,5 +1,6 @@
 ; External referene to multiboot information pointer variable
 extern multiboot_information
+extern load_multiboot_information
 
 ; How many bytes from the start of the file we search for the header.
 MULTIBOOT_SEARCH equ			8192

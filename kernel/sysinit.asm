@@ -37,7 +37,7 @@ global sysinit:function (sysinit.end - sysinit)
 sysinit:
 	; The current machine state:
 	; EAX = 0X2BADB002
-	; EBX is the addressof the multiboot info structure
+	; EBX is the address of the multiboot info structure
 	; CS, DS, ES, FS, GS, SS are all valid segments from 0 to 0xFFFFFFFF
 	; A20 gate is enabled
 	; CR0 bit 0 set, bit 31 (PG) cleared
@@ -48,6 +48,17 @@ sysinit:
 	; To check the multiboot info struct 
 	; mov edx, [ebx + offset]
 	; hlt
+
+	; To set up a stack, we set the esp register to point to the top of our
+	; stack (as it grows downwards on x86 systems). This is necessarily done
+	; in assembly as languages such as C cannot function without a stack.
+	mov ebp, tmpstack_top
+	mov esp, ebp
+
+	; We load the multiboot info structure in a variable
+	push ebx
+	call load_multiboot_information
+	pop ebx
 
 .hang:
 	hlt

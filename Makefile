@@ -1,6 +1,6 @@
 include config.mk
 
-$(KERNEL): $(OBJ_DIR)/sysinit.o 
+$(KERNEL): $(OBJ_DIR)/sysinit.o $(OBJ_DIR)/multiboot.o
 	$(LD) -T $(LINK_SCRIPT) $^ -o $@
 
 qemu-test-kernel: $(KERNEL)
@@ -15,6 +15,9 @@ qemu-test-iso: $(ISO)
 
 $(OBJ_DIR)/sysinit.o: kernel/sysinit.asm libk/include/multiboot.inc
 	$(AS) $(AS_FLAGS) -I libk/include/ $< -o $@
+
+$(OBJ_DIR)/multiboot.o: libk/multiboot.c libk/include/multiboot.h
+	$(CC) $(C_FLAGS) -ffreestanding -I libk/include/ -r $< -o $@
 
 clean:
 	rm -f $(OBJ_DIR)/*.o
