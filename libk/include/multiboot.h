@@ -1,6 +1,3 @@
-#include <portability.h>
-#include <stdint.h>
-
 /* multiboot.h - Multiboot header file. */
 /* Copyright (C) 1999,2003,2007,2008,2009,2010  Free Software Foundation, Inc.
  *
@@ -24,6 +21,12 @@
 
 #ifndef LIBK_MULTIBOOT_H
 #define LIBK_MULTIBOOT_H 1
+
+#include <portability.h>
+#include <memory.h>
+#include <video.h>
+#include <stdint.h>
+
 
 /* How many bytes from the start of the file we search for the header. */
 #define MULTIBOOT_SEARCH                        8192
@@ -137,8 +140,7 @@ struct multiboot_info {
 	uint32_t flags;
 
 	/* Available memory from BIOS */
-	uint32_t mem_lower;
-	uint32_t mem_upper;
+	struct memory_amounts available_mem;
 
 	/* "root" partition */
 	uint32_t boot_device;
@@ -156,11 +158,10 @@ struct multiboot_info {
 	} IFNOTC11(aout_elf_tables_union);
 
 	/* Memory Mapping buffer */
-	uint32_t mmap_length;
-	uint32_t mmap_addr;
+	struct memory_map mmap;
 
 	/* Drive Info buffer */
-	uint32_t drives_length;
+	uint32_t drives_len;
 	uint32_t drives_addr;
 
 	/* ROM configuration table */
@@ -173,55 +174,9 @@ struct multiboot_info {
 	uint32_t apm_table;
 
 	/* Video */
-	uint32_t vbe_control_info;
-	uint32_t vbe_mode_info;
-	uint16_t vbe_mode;
-	uint16_t vbe_interface_seg;
-	uint16_t vbe_interface_off;
-	uint16_t vbe_interface_len;
-
-	uint64_t framebuffer_addr;
-	uint32_t framebuffer_pitch;
-	uint32_t framebuffer_width;
-	uint32_t framebuffer_height;
-	uint8_t framebuffer_bpp;
-#define MULTIBOOT_FRAMEBUFFER_TYPE_INDEXED 0
-#define MULTIBOOT_FRAMEBUFFER_TYPE_RGB	   1
-#define MULTIBOOT_FRAMEBUFFER_TYPE_EGA_TEXT	   2
-	uint8_t framebuffer_type;
-	union {
-		struct {
-			uint32_t framebuffer_palette_addr;
-			uint16_t framebuffer_palette_num_colors;
-		} IFNOTC11(palette);
-		struct {
-			uint8_t framebuffer_red_field_position;
-			uint8_t framebuffer_red_mask_size;
-			uint8_t framebuffer_green_field_position;
-			uint8_t framebuffer_green_mask_size;
-			uint8_t framebuffer_blue_field_position;
-			uint8_t framebuffer_blue_mask_size;
-		} IFNOTC11(fields_masks);
-	} IFNOTC11(framebuffer_color_info);
+	struct vbe_table vbe;
+	struct framebuffer framebuffer;
 };
-
-struct multiboot_color {
-	uint8_t red;
-	uint8_t green;
-	uint8_t blue;
-};
-
-struct multiboot_mmap_entry {
-	uint32_t size;
-	uint64_t addr;
-	uint64_t len;
-#define MULTIBOOT_MEMORY_AVAILABLE	            1
-#define MULTIBOOT_MEMORY_RESERVED	             2
-#define MULTIBOOT_MEMORY_ACPI_RECLAIMABLE	     3
-#define MULTIBOOT_MEMORY_NVS	                  4
-#define MULTIBOOT_MEMORY_BADRAM	               5
-	uint32_t type;
-} ATTRIBUTES(packed);
 
 struct multiboot_mod_list {
 	/* the memory used goes from bytes ’mod_start’ to ’mod_end-1’ inclusive */
